@@ -16,7 +16,7 @@
 	<body>
 		<ul id="messages"></ul>
 		<form action="">
-			<input id="input_box" autocomplete="on" />
+			<input id="input_box" autocomplete="off" />
 			<button>Send</button>
 		</form>
 		<script src="/socket.io/socket.io.js"></script>
@@ -32,6 +32,9 @@
 				socket.on('chat message',function(msg){
 					$('#messages').append($('<li>').text(msg));
 					window.scrollTo(0, document.body.scrollHeight);
+				}); 
+				socket.on('broad',function(info){
+					$('#messages').append($('<li>').text(info));
 				});
 			});
 		</script>
