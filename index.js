@@ -11,14 +11,16 @@ app.get('/', function(req, res){
 
 io.on('connection',function(socket){
 	console.log("a user connected");
-	socket.broadcast.emit('broad',{info:"a user login"});
+	socket.broadcast.emit('broad',"a user login");
 	
-	socket.on('chat message',function(msg){
-		io.emit("chat message",msg);
-		//console.log('message: '+ msg);
+	socket.on('chat message',function(data){
+		io.emit("chat message",data);
+//		console.log('data: '+ JSON.stringify(data));
+//		console.log('data: '+ data.nickname);
 	});
 	
-	socket.on('disconnect',function(){
+	socket.on('disconnect',function(info){
+		socket.broadcast.emit('disconnect',info.nickname+ " log out");
 		console.log("a user disconnected");
 	});
 });
