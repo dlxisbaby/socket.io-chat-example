@@ -11,7 +11,10 @@ app.get('/', function(req, res){
 
 io.on('connection',function(socket){
 	console.log("a user connected");
-	socket.broadcast.emit('broad',"a user login");
+	
+	socket.on('connection',function(data){
+		socket.broadcast.emit('broad',data + " login");
+	});
 	
 	socket.on('chat message',function(data){
 		io.emit("chat message",data);
@@ -19,9 +22,9 @@ io.on('connection',function(socket){
 //		console.log('data: '+ data.nickname);
 	});
 	
-	socket.on('disconnect',function(info){
-		socket.broadcast.emit('disconnect',info.nickname+ " log out");
-		console.log("a user disconnected");
+	socket.on('disconnect',function(data){
+		socket.broadcast.emit('broad',data + " log out");
+		console.log(data);
 	});
 });
 
