@@ -25,8 +25,7 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="http://code.jquery.com/jquery-2.0.0.js"></script>
 		<script>
-			var nickname;
-			nickname = prompt('你的名字？');
+			var nickname = prompt('你的名字？');
 			$("#nickname").val(nickname);
 
 			
@@ -35,7 +34,6 @@
 				socket.emit('connection',nickname);
 
 				$('form').submit(function(){
-//					var nickname = $('#nickname').val();
 					var msg = $('#input_box').val();
 					
 					socket.emit('chat message',{nickname:nickname,msg:msg});
@@ -46,18 +44,11 @@
 				});
 				
 				socket.on('chat message',function(data){
-//					var nickname = $('#nickname').val();
 					if (data.nickname != nickname) {
 						$('#messages').append($('<li>').text(data.nickname+":"+data.msg));
 					};
 					window.scrollTo(0, document.body.scrollHeight);
 				}); 
-				
-				socket.once('disconnect',function(){
-//					var nickname = $('#nickname').val();
-					socket.emit('disconnect',nickname);
-					console.log(nickname)
-				});
 				
 				socket.on('broad',function(info){
 					$('#messages').append($('<li>').text(info));
