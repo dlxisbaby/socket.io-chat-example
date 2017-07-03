@@ -22,6 +22,10 @@ io.on('connection',function(socket){
 		io.emit("chat message",data);
 	});
 	
+	socket.on("is typing",function(data){
+		io.emit("is typing",data);
+	});
+	
 });
 
 
