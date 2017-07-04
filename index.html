@@ -104,12 +104,14 @@
 			
 			$(function(){
 				var socket = io();
-				socket.on('connect',function(){//建立连接
+				//建立连接
+				socket.on('connect',function(){
 					socket.emit('connection',{id:socket.id,nickname:nickname});
 					//func(nickname+" 已登录",1000);
 				})
-
-				$('form').submit(function(){//表单
+				
+				//表单
+				$('form').submit(function(){
 					var msg = $('#input_box').val();
 					
 					socket.emit('chat message',{id:socket.id,nickname:nickname,msg:msg});
@@ -119,16 +121,19 @@
 					return false;
 				});
 				
+				//出发用户按键盘事件
 				$('#input_box').keypress(function(){
 					socket.emit("is typing",{id:socket.id,nickname:nickname});
 				});
 				
+				//用户正在输入
 				socket.on("is typing",function(data){
 					if ( data.id != socket.id) {
 						func(data.nickname + " is typing",1000);
 					}
 				});
 				
+				//聊天信息
 				socket.on('chat message',function(data){
 					if (data.id != socket.id) {
 						$('#messages').append($('<li>').text(data.nickname+":"+data.msg));
@@ -136,10 +141,12 @@
 					window.scrollTo(0, document.body.scrollHeight);
 				}); 
 				
+				//广播
 				socket.on('broad',function(info){
 					$('#messages').append($('<li>').text(info));
 				});
 				
+				//监听在线用户
 				socket.on('online people',function(data){
 					if(document.getElementById("layer")!=null){
 						document.body.removeChild(layer);
