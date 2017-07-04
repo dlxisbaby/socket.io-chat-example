@@ -23,10 +23,10 @@
 			<button>Send</button>
 		</form>
 		<script>//弹出框
-			var layer=document.createElement("div");
-			layer.id="layer";
-			function func(content,time)
-			{
+
+			function func(id,content,time){
+				var layer=document.createElement("div");
+				layer.id=id;
 			    var style=
 			    {
 			        background:"#FFFFCC",
@@ -39,12 +39,12 @@
 			    }
 			    for(var i in style)
 			        layer.style[i]=style[i];   
-			    if(document.getElementById("layer")==null)
+			    if(document.getElementById(id)==null)
 			    {
 			        document.body.appendChild(layer);
 			        layer.innerHTML = content;
 			        if (time != null){
-			        	setTimeout("document.body.removeChild(layer)",time);
+			        	setTimeout("document.body.removeChild("+id+")",time);
 			        }
 			    }
 			}	
@@ -106,8 +106,10 @@
 				var socket = io();
 				//建立连接
 				socket.on('connect',function(){
+					var div_id = "login";
 					socket.emit('connection',{id:socket.id,nickname:nickname});
-					//func(nickname+" 已登录",1000);
+					func(div_id,nickname+" 已登录",1000);
+					document.getElementById(div_id).style.top = "20%";
 				})
 				
 				//表单
@@ -128,8 +130,9 @@
 				
 				//用户正在输入
 				socket.on("is typing",function(data){
+					var div_id = "typing";
 					if ( data.id != socket.id) {
-						func(data.nickname + " is typing",1000);
+						func(div_id,data.nickname + " is typing",1000);
 					}
 				});
 				
@@ -148,14 +151,15 @@
 				
 				//监听在线用户
 				socket.on('online people',function(data){
-					if(document.getElementById("layer")!=null){
-						document.body.removeChild(layer);
+					var div_id = "online";
+					if(document.getElementById(div_id)!=null){
+						document.body.removeChild(document.getElementById(div_id));
 					}
-					var socket_id = socket.id;
 
 					var values = getJsonArrayValues(data,'string');
-					console.log(values);
-					func(values + " is online");
+					func(div_id,values + " is online");
+					document.getElementById(div_id).style.top = "5%";
+//					document.getElementById(div_id).setAttribute("style","top:5%;background:blue;")
 					
 				});
 			});
