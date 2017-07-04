@@ -49,6 +49,52 @@
 			    }
 			}	
 		</script>
+		<script>
+			//获取字典数组的所有key
+			function getJsonArrayKeys(jsonArray,return_type){
+				var keyArray = [];
+				for (i in jsonArray){
+					for (j in jsonArray[i]){
+						keyArray.push(j);
+					}
+				}
+				if (return_type == "string"){
+					var keyString = '';
+					for (i in keyArray){
+						if (keyString == ''){
+							keyString = keyArray[i];
+						}else{
+							keyString = keyString + "," + keyArray[i]
+						}
+					}
+					return keyString;
+				}else{
+					return keyArray;
+				}
+			}
+			//获取字典数组的所有value
+			function getJsonArrayValues(jsonArray,return_type){
+				var valueArray = [];
+				for (i in jsonArray){
+					for (j in jsonArray[i]){
+						valueArray.push(jsonArray[i][j]);
+					}
+				}
+				if (return_type == "string"){
+					var valueString = '';
+					for (i in valueArray){
+						if (valueString == ''){
+							valueString = valueArray[i];
+						}else{
+							valueString = valueString + "," + valueArray[i];
+						}
+					}
+					return valueString;
+				}else{
+					return valueArray;
+				}
+			}			
+		</script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="http://code.jquery.com/jquery-2.0.0.js"></script>
 		<script>
@@ -58,13 +104,15 @@
 			
 			$(function(){
 				var socket = io();
-				socket.emit('connection',nickname);
-				func(nickname+" 已登录",1000);
+				socket.on('connect',function(){//建立连接
+					socket.emit('connection',{id:socket.id,nickname:nickname});
+					//func(nickname+" 已登录",1000);
+				})
 
-				$('form').submit(function(){
+				$('form').submit(function(){//表单
 					var msg = $('#input_box').val();
 					
-					socket.emit('chat message',{nickname:nickname,msg:msg});
+					socket.emit('chat message',{id:socket.id,nickname:nickname,msg:msg});
 					$('#messages').append($('<li>').text(nickname+":"+msg));
 					
 					$('#input_box').val('');
@@ -72,18 +120,17 @@
 				});
 				
 				$('#input_box').keypress(function(){
-					socket.emit("is typing",nickname);
-//					$('#input_box').css("background-color","#D6D6FF");	
+					socket.emit("is typing",{id:socket.id,nickname:nickname});
 				});
 				
 				socket.on("is typing",function(data){
-					if ( data != nickname) {
-						func(data + " is typing");
+					if ( data.id != socket.id) {
+						func(data.nickname + " is typing",1000);
 					}
 				});
 				
 				socket.on('chat message',function(data){
-					if (data.nickname != nickname) {
+					if (data.id != socket.id) {
 						$('#messages').append($('<li>').text(data.nickname+":"+data.msg));
 					};
 					window.scrollTo(0, document.body.scrollHeight);
@@ -91,6 +138,18 @@
 				
 				socket.on('broad',function(info){
 					$('#messages').append($('<li>').text(info));
+				});
+				
+				socket.on('online people',function(data){
+					if(document.getElementById("layer")!=null){
+						document.body.removeChild(layer);
+					}
+					var socket_id = socket.id;
+
+					var values = getJsonArrayValues(data,'string');
+					console.log(values);
+					func(values + " is online");
+					
 				});
 			});
 		</script>
