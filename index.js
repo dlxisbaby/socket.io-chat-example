@@ -13,6 +13,8 @@ io.on('connection',function(socket){
 	
 	socket.on('connection',function(data){
 		socket.broadcast.emit('broad',data + " login");
+		socket.emit('online people',data);
+		
 		socket.on('disconnect',function(){
 			socket.broadcast.emit('broad',data + " log out");
 		});
