@@ -36,6 +36,12 @@ io.on('connection',function(socket){
 		io.emit("is typing",data);
 	});
 	
+	socket.on('private message',function(data){
+		//console.log(data);
+		var pri_data = {pri_msg:data.msg,from_id:data.id,from_nickname:data.nickname,to_id:data.pri_id};
+		socket.to(data.pri_id).emit('private message',pri_data);
+	});
+	
 });
 
 function removeIdArrayElement(id_array_or_json,id){
